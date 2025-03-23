@@ -11,7 +11,7 @@ let resetActive = false;
 
 // 从 public/words.txt 加载单词库
 function loadLocalDictionary() {
-  return fetch('words.txt')
+  return fetch('public/words.txt')
     .then(res => res.text())
     .then(text => {
       localDictionary = text.split(/\r?\n/)
@@ -170,7 +170,7 @@ function updatePuzzleAfterGameEnd(newData) {
   });
 }
 
-// 当小局猜对后调用此函数：调用大局接口解锁拼图，并显示提示和操作按钮
+// 当小局猜对后调用：调用大局接口解锁拼图，并显示提示和操作按钮
 function unlockPiece(sessionId) {
   fetch(`/api/session?id=${sessionId}`, {
     method: 'PUT',
@@ -198,7 +198,7 @@ function resetLocalGame() {
   localAttempts = [];
   document.getElementById('wordle-board').innerHTML = '';
 }
-// 更新左侧显示为玩家的小局目标单词
+// 更新左侧显示为玩家自己的目标单词
 function updateSecretWordDisplay(word) {
   document.getElementById('secret-word-display').innerText = `当前谜底：${word}`;
 }
@@ -222,7 +222,7 @@ function submitLocalGuess(sessionId) {
   if (guess === localTargetWord) {
     // 猜对后调用大局接口解锁拼图，并显示提示和操作按钮
     unlockPiece(sessionId);
-    // 小局状态暂不自动重置，等待用户点击“继续挑战下一块拼图”或回车触发 resetLocalRound
+    // 小局状态暂不自动重置，等待用户点击“继续挑战下一块拼图”或按回车触发 resetLocalRound
   } else if (localAttempts.length >= localMaxAttempts) {
     showTemporaryMessage(`本局失败，正确单词是 ${localTargetWord}`);
     resetLocalGame();
@@ -347,7 +347,7 @@ function shareSession(sessionId) {
 // --- 加载单词库 ---
 // 从 public/words.txt 加载单词库，生成 localDictionary 数组
 function loadLocalDictionary() {
-  return fetch('words.txt')
+  return fetch('public/words.txt')
     .then(res => res.text())
     .then(text => {
       localDictionary = text.split(/\r?\n/)

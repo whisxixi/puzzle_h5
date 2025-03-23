@@ -7,10 +7,10 @@ const path = require('path');
 
 app.use(bodyParser.json());
 
-// 静态资源目录仍指向 public 文件夹
-app.use(express.static(path.join(__dirname, '../public')));
+// ✅ 将静态资源目录指向项目根目录
+app.use(express.static(path.join(__dirname, '..')));
 
-// 新增：根路由，返回根目录下的 index.html 文件
+// ✅ 根路由，返回根目录下的 index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
@@ -22,7 +22,7 @@ let sessions = {};
 app.post('/api/session', (req, res) => {
   const sessionId = uuid.v4();
   const imageUrl = getRandomImage();
-  const gridRows = 3;  // 3×3，共9块
+  const gridRows = 3;
   const gridCols = 3;
   const totalPieces = gridRows * gridCols;
   const puzzleProgress = Array(totalPieces).fill(false);
@@ -37,7 +37,7 @@ app.post('/api/session', (req, res) => {
   res.json(sessions[sessionId]);
 });
 
-// 获取大局数据（共享部分）
+// 获取大局数据
 app.get('/api/session', (req, res) => {
   const sessionId = req.query.id;
   if (sessions[sessionId]) {
@@ -48,12 +48,14 @@ app.get('/api/session', (req, res) => {
   }
 });
 
-// 更新大局数据，支持三种动作：unlockPiece, nextImage, resetRound
+// 更新大局数据
 app.put('/api/session', (req, res) => {
   const sessionId = req.query.id;
   const session = sessions[sessionId];
   if (!session) return res.status(404).json({ error: 'Session not found' });
+
   const { action } = req.body;
+
   if (action === 'unlockPiece') {
     const lockedIndices = session.puzzleProgress
       .map((v, i) => (v === false ? i : null))
@@ -77,9 +79,9 @@ app.put('/api/session', (req, res) => {
   }
 });
 
-// 辅助函数：从 public/images 随机选取一张图片
+// ✅ 读取根目录下 images 文件夹的图片
 function getRandomImage() {
-  const imagesDir = path.join(__dirname, '../public/images');
+  const imagesDir = path.join(__dirname, '../images');
   let imageFiles = [];
   try {
     imageFiles = fs.readdirSync(imagesDir).filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
@@ -98,5 +100,5 @@ function getConcurrentPlayers(sessionId) {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
