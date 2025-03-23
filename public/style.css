@@ -5,16 +5,12 @@ body {
   background: #f2f2f2;
 }
 
-/* 拼图展示区域（固定在页面上方，宽度与高度可根据需要调整） */
+/* 拼图展示区域：尺寸由 JS 动态设置 */
 #puzzle-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2px;
-  max-width: 90%;
   margin: 20px auto;
-  /* 固定高度，确保不会因重绘改变布局 */
-  height: 300px;
-  position: relative;
 }
 
 /* 每个拼图块 */
@@ -25,12 +21,9 @@ body {
   background-position: center;
   transition: all 0.5s ease-out;
 }
-
-/* 用于动画“掀开”效果的类 */
 .puzzle-piece.reveal {
   animation: revealAnimation 0.5s forwards;
 }
-
 @keyframes revealAnimation {
   from {
     opacity: 0;
@@ -42,14 +35,31 @@ body {
   }
 }
 
+/* 信息行：左右两边自适应，中间区域居中 */
+.info-row {
+  max-width: 90%;
+  margin: 0 auto 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.info-row .left {
+  flex: 1;
+  text-align: left;
+  font-size: 20px;
+}
+.info-row .center {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
 /* Wordle 游戏区域 */
 #wordle-game {
   margin: 20px auto;
   max-width: 90%;
   text-align: center;
 }
-
-/* 显示猜测历史的区域 */
 #wordle-board {
   margin-bottom: 10px;
   min-height: 100px;
@@ -58,26 +68,23 @@ body {
   border: 1px solid #ddd;
   overflow-y: auto;
 }
-
 #wordle-board div {
   margin: 4px 0;
   font-size: 20px;
   letter-spacing: 4px;
 }
 
-/* 表单输入 */
+/* 表单样式 */
 #wordle-form {
   margin: 0 auto;
   display: flex;
   justify-content: center;
 }
-
 #wordle-input {
   width: 60%;
   padding: 8px;
   font-size: 16px;
 }
-
 #submit-word {
   padding: 8px 16px;
   font-size: 16px;
@@ -89,10 +96,4 @@ body {
   margin: 20px auto;
   max-width: 90%;
   text-align: center;
-}
-
-/* “再玩一局”区域 */
-.center {
-  text-align: center;
-  margin: 20px auto;
 }

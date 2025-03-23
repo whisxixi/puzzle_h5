@@ -10,10 +10,17 @@
   <!-- 拼图展示区域 -->
   <div id="puzzle-container"></div>
 
+  <!-- 信息行：左侧显示当前谜底；中间显示提示信息和按钮 -->
+  <div id="info-row" class="info-row">
+    <div id="secret-word-display" class="left">当前谜底：</div>
+    <div id="reset-container" class="center" style="display: none;">
+      <span id="reset-prompt"></span>
+      <button id="reset-button" style="display: none;">继续下一块拼图</button>
+    </div>
+  </div>
+
   <!-- Wordle 游戏区域 -->
   <div id="wordle-game">
-    <!-- 显示谜底单词 -->
-    <div id="secret-word-display" class="center" style="font-size: 20px; margin-bottom: 10px;"></div>
     <div id="wordle-board">
       <!-- 显示猜测历史 -->
     </div>
@@ -27,11 +34,6 @@
   <div id="share-section" class="center">
     <button id="share-button">分享</button>
     <p id="concurrent-count">0 人也在同时玩</p>
-  </div>
-
-  <!-- 游戏结束后出现的“继续挑战下一块”按钮，初始隐藏 -->
-  <div id="restart-section" class="center">
-    <button id="restart-button" style="display: none;">挑战下一块拼图！</button>
   </div>
 
   <script src="app.js"></script>
