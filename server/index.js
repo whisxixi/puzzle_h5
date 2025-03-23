@@ -31,7 +31,7 @@ app.post('/api/session', (req, res) => {
   res.json(sessions[sessionId]);
 });
 
-// 获取大局数据（共享部分，不返回任何小局数据）
+// 获取大局数据（共享部分，不涉及小局数据）
 app.get('/api/session', (req, res) => {
   const sessionId = req.query.id;
   if (sessions[sessionId]) {
@@ -43,9 +43,9 @@ app.get('/api/session', (req, res) => {
 });
 
 // 更新大局数据，支持三种动作：
-// "unlockPiece"：随机解锁一个未解锁的拼图块；
-// "nextImage"：当大局拼图全部解锁后，生成新图片，重置拼图进程；
-// "resetRound"：仅用于小局重置，直接返回当前大局数据，不改变拼图进程。
+// - "unlockPiece"：随机解锁一个未解锁的拼图块
+// - "nextImage"：大局拼图全部解锁后，生成新图片，重置拼图进程
+// - "resetRound"：仅用于小局重置，直接返回当前大局数据
 app.put('/api/session', (req, res) => {
   const sessionId = req.query.id;
   const session = sessions[sessionId];

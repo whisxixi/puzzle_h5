@@ -1,15 +1,15 @@
 // 全局变量：大局数据由服务器管理，小局数据由客户端独立管理
 let currentPuzzleProgress = [];
-let currentSession = null; // 包含 imageUrl, gridRows, gridCols
+let currentSession = null; // 包含 imageUrl, gridRows, gridCols, sessionId
 let localTargetWord = '';  // 玩家独立小局目标单词
 let localAttempts = [];
 const localMaxAttempts = 6;
-let localDictionary = [];  // 单词库从 words.txt 加载
+let localDictionary = [];  // 单词库将从 words.txt 加载
 
-// 新增全局变量，表示是否大局已完成（允许重置按钮）
+// 新增全局变量，表示是否大局已完成（激活重置操作）
 let resetActive = false;
 
-// 加载本地词库，从 public/words.txt 获取
+// 从 public/words.txt 加载单词库
 function loadLocalDictionary() {
   return fetch('words.txt')
     .then(res => res.text())
@@ -21,8 +21,8 @@ function loadLocalDictionary() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 先加载词库，再初始化游戏
   loadLocalDictionary().then(() => {
+    console.log('词库加载完成，共 ' + localDictionary.length + ' 个单词');
     let sessionId;
     const urlParams = new URLSearchParams(window.location.search);
     sessionId = urlParams.get('session');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 表单提交：若重置按钮显示（resetActive为true），则回车触发重置；否则提交小局猜测
+    // 表单提交：如果 resetActive 为 true，则回车触发重置操作；否则提交小局猜测
     document.getElementById('wordle-form').addEventListener('submit', (event) => {
       event.preventDefault();
       if (resetActive) {
@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- 大局部分（服务器管理） ---
+// 创建大局会话
 function createNewSession() {
   return fetch('/api/session', { method: 'POST' })
     .then(res => res.json());
@@ -88,13 +89,14 @@ function initGame(sessionData) {
   currentSession = {
     imageUrl: sessionData.imageUrl,
     gridRows: sessionData.gridRows,
-    gridCols: sessionData.gridCols
+    gridCols: sessionData.gridCols,
+    sessionId: sessionData.sessionId  // 保存大局的 sessionId
   };
   currentPuzzleProgress = sessionData.puzzleProgress.slice();
   renderPuzzleInitial(sessionData);
   updatePuzzleContainerSize();
   updateConcurrentPlayers(sessionData.concurrentPlayers);
-  // 初始化小局：生成新的目标单词并清空记录
+  // 初始化小局：生成新的目标单词并清空本地记录
   resetLocalGame();
   updateSecretWordDisplay(localTargetWord);
   updateResetPrompt('');
@@ -121,11 +123,12 @@ function renderPuzzleInitial(sessionData) {
     container.appendChild(piece);
   }
 }
+// 修改：构造完整图片 URL 并附加 sessionId 和 cache-buster 参数，确保每个大局图片正确加载
 function updatePuzzleContainerSize() {
   const container = document.getElementById('puzzle-container');
   const containerHeight = window.innerHeight * 0.7;
   const img = new Image();
-  img.src = currentSession.imageUrl;
+  img.src = window.location.origin + currentSession.imageUrl + '?sessionId=' + currentSession.sessionId + '&t=' + new Date().getTime();
   img.onload = () => {
     const ratio = img.naturalWidth / img.naturalHeight;
     const containerWidth = containerHeight * ratio;
@@ -133,12 +136,13 @@ function updatePuzzleContainerSize() {
     container.style.width = `${containerWidth}px`;
   };
 }
+// 修改：构造完整图片 URL 并附加 sessionId 和 cache-buster 参数
 function setPieceImage(piece, index) {
   const cols = currentSession.gridCols;
   const rows = currentSession.gridRows;
   const col = index % cols;
   const row = Math.floor(index / cols);
-  piece.style.backgroundImage = `url(${currentSession.imageUrl})`;
+  piece.style.backgroundImage = `url(${window.location.origin}${currentSession.imageUrl}?sessionId=${currentSession.sessionId}&t=${new Date().getTime()})`;
   piece.style.backgroundPosition = `-${col * 100}% -${row * 100}%`;
   piece.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
 }
@@ -195,7 +199,7 @@ function resetLocalGame() {
   localAttempts = [];
   document.getElementById('wordle-board').innerHTML = '';
 }
-// 更新左侧显示为玩家自己的目标单词
+// 更新左侧显示为玩家的小局目标单词
 function updateSecretWordDisplay(word) {
   document.getElementById('secret-word-display').innerText = `当前谜底：${word}`;
 }
@@ -203,7 +207,7 @@ function updateSecretWordDisplay(word) {
 function submitLocalGuess(sessionId) {
   const input = document.getElementById('wordle-input');
   const guess = input.value.trim().toUpperCase();
-  input.value = ''; // 每次提交后自动清空输入框
+  input.value = ''; // 自动清空输入框
   if (!guess) return;
   if (guess.length !== localTargetWord.length) {
     showTemporaryMessage(`单词长度应为 ${localTargetWord.length}`);
@@ -217,8 +221,9 @@ function submitLocalGuess(sessionId) {
   const feedback = getLocalFeedback(guess, localTargetWord);
   appendLocalAttempt(`${guess}   ${feedback}`);
   if (guess === localTargetWord) {
+    // 猜对后调用大局接口解锁拼图，并显示提示和操作按钮
     unlockPiece(sessionId);
-    // 小局状态暂不自动重置，等待用户点击“继续挑战下一块拼图”或回车触发 resetLocalRound
+    // 小局状态不立即重置，等待用户点击“继续挑战下一块拼图”或按回车触发 resetLocalRound
   } else if (localAttempts.length >= localMaxAttempts) {
     showTemporaryMessage(`本局失败，正确单词是 ${localTargetWord}`);
     resetLocalGame();
@@ -253,7 +258,7 @@ function appendLocalAttempt(text) {
 }
 
 // --- 提示与重置区域 ---
-// 显示临时提示（无效猜测等），2秒后自动清除
+// 显示临时提示（例如无效猜测），2秒后自动清除
 function showTemporaryMessage(message) {
   const resetContainer = document.getElementById('reset-container');
   const resetPrompt = document.getElementById('reset-prompt');
@@ -268,7 +273,7 @@ function showTemporaryMessage(message) {
 function updateResetPrompt(text) {
   document.getElementById('reset-prompt').innerText = text;
 }
-// 显示重置提示（小局结束提示）：提示显示2秒后淡出，再显示按钮，并激活重置操作
+// 显示重置提示（小局成功提示）：提示显示2秒后淡出，再显示按钮，并激活重置操作
 function showResetPrompt(message, btnText) {
   resetActive = true;
   const resetContainer = document.getElementById('reset-container');
@@ -289,7 +294,7 @@ function showResetPrompt(message, btnText) {
     }, 1000);
   }, 2000);
 }
-// 重置本地小局（继续挑战下一块）：清空本地记录，生成新目标单词，并更新显示，不更改大局拼图记录
+// 重置本地小局（继续挑战下一块）：清空本地记录、生成新目标单词，并更新显示，不更改大局拼图记录
 function resetLocalRound() {
   resetLocalGame();
   updateSecretWordDisplay(localTargetWord);
@@ -300,7 +305,7 @@ function resetLocalRound() {
 }
 
 // --- 大局重置操作 ---
-// 小局重置（继续挑战下一块拼图）：调用大局接口 resetRound，仅返回当前大局数据；小局则重置
+// 小局重置（继续挑战下一块拼图）：调用大局接口 resetRound，仅返回当前大局数据，不改变拼图进程；然后重置小局
 function resetRound(sessionId) {
   fetch(`/api/session?id=${sessionId}`, {
     method: 'PUT',
@@ -352,7 +357,6 @@ function loadLocalDictionary() {
     });
 }
 
-// 在 DOMContentLoaded 时先加载单词库
 document.addEventListener('DOMContentLoaded', () => {
   loadLocalDictionary().then(() => {
     console.log('词库加载完成，共 ' + localDictionary.length + ' 个单词');
