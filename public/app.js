@@ -4,7 +4,7 @@ let currentSession = null; // 包含 imageUrl, gridRows, gridCols, sessionId
 let localTargetWord = '';  // 玩家独立小局目标单词
 let localAttempts = [];
 const localMaxAttempts = 6;
-let localDictionary = [];  // 单词库将从 words.txt 加载
+let localDictionary = [];  // 单词库将从 public/words.txt 加载
 
 // 新增全局变量，表示是否大局已完成（激活重置操作）
 let resetActive = false;
@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- 大局部分（服务器管理） ---
-// 创建大局会话
 function createNewSession() {
   return fetch('/api/session', { method: 'POST' })
     .then(res => res.json());
@@ -123,7 +122,7 @@ function renderPuzzleInitial(sessionData) {
     container.appendChild(piece);
   }
 }
-// 修改：构造完整图片 URL 并附加 sessionId 和 cache-buster 参数，确保每个大局图片正确加载
+// 修改：构造完整图片 URL，附加 sessionId 和 cache-buster 参数
 function updatePuzzleContainerSize() {
   const container = document.getElementById('puzzle-container');
   const containerHeight = window.innerHeight * 0.7;
@@ -136,7 +135,7 @@ function updatePuzzleContainerSize() {
     container.style.width = `${containerWidth}px`;
   };
 }
-// 修改：构造完整图片 URL 并附加 sessionId 和 cache-buster 参数
+// 修改：构造完整图片 URL，附加 sessionId 和 cache-buster 参数
 function setPieceImage(piece, index) {
   const cols = currentSession.gridCols;
   const rows = currentSession.gridRows;
@@ -193,7 +192,7 @@ function unlockPiece(sessionId) {
 }
 
 // --- 小局部分（客户端独立） ---
-// 重置小局状态：从 words.txt 加载的词库中随机选取目标单词，并清空本地记录
+// 重置小局状态：从 public/words.txt 加载的词库中随机选取目标单词，并清空本地记录
 function resetLocalGame() {
   localTargetWord = localDictionary[Math.floor(Math.random() * localDictionary.length)];
   localAttempts = [];
@@ -223,7 +222,7 @@ function submitLocalGuess(sessionId) {
   if (guess === localTargetWord) {
     // 猜对后调用大局接口解锁拼图，并显示提示和操作按钮
     unlockPiece(sessionId);
-    // 小局状态不立即重置，等待用户点击“继续挑战下一块拼图”或按回车触发 resetLocalRound
+    // 小局状态暂不自动重置，等待用户点击“继续挑战下一块拼图”或回车触发 resetLocalRound
   } else if (localAttempts.length >= localMaxAttempts) {
     showTemporaryMessage(`本局失败，正确单词是 ${localTargetWord}`);
     resetLocalGame();
@@ -258,7 +257,7 @@ function appendLocalAttempt(text) {
 }
 
 // --- 提示与重置区域 ---
-// 显示临时提示（例如无效猜测），2秒后自动清除
+// 显示临时提示（如无效猜测），2秒后自动清除
 function showTemporaryMessage(message) {
   const resetContainer = document.getElementById('reset-container');
   const resetPrompt = document.getElementById('reset-prompt');

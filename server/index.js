@@ -6,8 +6,14 @@ const fs = require('fs');
 const path = require('path');
 
 app.use(bodyParser.json());
-// 设置静态资源目录
+
+// 静态资源目录仍指向 public 文件夹
 app.use(express.static(path.join(__dirname, '../public')));
+
+// 新增：根路由，返回根目录下的 index.html 文件
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
 
 // 内存存储大局会话数据（生产环境建议使用数据库）
 let sessions = {};
@@ -31,7 +37,7 @@ app.post('/api/session', (req, res) => {
   res.json(sessions[sessionId]);
 });
 
-// 获取大局数据（共享部分，不涉及小局数据）
+// 获取大局数据（共享部分）
 app.get('/api/session', (req, res) => {
   const sessionId = req.query.id;
   if (sessions[sessionId]) {
@@ -42,10 +48,7 @@ app.get('/api/session', (req, res) => {
   }
 });
 
-// 更新大局数据，支持三种动作：
-// - "unlockPiece"：随机解锁一个未解锁的拼图块
-// - "nextImage"：大局拼图全部解锁后，生成新图片，重置拼图进程
-// - "resetRound"：仅用于小局重置，直接返回当前大局数据
+// 更新大局数据，支持三种动作：unlockPiece, nextImage, resetRound
 app.put('/api/session', (req, res) => {
   const sessionId = req.query.id;
   const session = sessions[sessionId];
@@ -74,7 +77,7 @@ app.put('/api/session', (req, res) => {
   }
 });
 
-// 辅助函数：从 public/images 目录随机选取一张图片
+// 辅助函数：从 public/images 随机选取一张图片
 function getRandomImage() {
   const imagesDir = path.join(__dirname, '../public/images');
   let imageFiles = [];
