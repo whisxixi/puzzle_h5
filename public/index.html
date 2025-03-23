@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>拼图 Wordle 活动推广</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 拼图展示区域 -->
+  <div id="puzzle-container"></div>
+
+  <!-- Wordle 游戏区域 -->
+  <div id="wordle-game">
+    <!-- 显示谜底单词 -->
+    <div id="secret-word-display" class="center" style="font-size: 20px; margin-bottom: 10px;"></div>
+    <div id="wordle-board">
+      <!-- 显示猜测历史 -->
+    </div>
+    <form id="wordle-form">
+      <input type="text" id="wordle-input" placeholder="输入单词" autocomplete="off">
+      <button type="submit" id="submit-word">提交</button>
+    </form>
+  </div>
+
+  <!-- 分享与在线人数区域 -->
+  <div id="share-section" class="center">
+    <button id="share-button">分享</button>
+    <p id="concurrent-count">0 人也在同时玩</p>
+  </div>
+
+  <!-- 游戏结束后出现的“继续挑战下一块”按钮，初始隐藏 -->
+  <div id="restart-section" class="center">
+    <button id="restart-button" style="display: none;">继续挑战下一块</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+/* 基本样式 */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+}
+
+/* 拼图展示区域（固定在页面上方，宽度与高度可根据需要调整） */
+#puzzle-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  max-width: 90%;
+  margin: 20px auto;
+  /* 固定高度，确保不会因重绘改变布局 */
+  height: 300px;
+  position: relative;
+}
+
+/* 每个拼图块 */
+.puzzle-piece {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: all 0.5s ease-out;
+}
+
+/* 用于动画“掀开”效果的类 */
+.puzzle-piece.reveal {
+  animation: revealAnimation 0.5s forwards;
+}
+
+@keyframes revealAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Wordle 游戏区域 */
+#wordle-game {
+  margin: 20px auto;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* 显示猜测历史的区域 */
+#wordle-board {
+  margin-bottom: 10px;
+  min-height: 100px;
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+#wordle-board div {
+  margin: 4px 0;
+  font-size: 20px;
+  letter-spacing: 4px;
+}
+
+/* 表单输入 */
+#wordle-form {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+#wordle-input {
+  width: 60%;
+  padding: 8px;
+  font-size: 16px;
+}
+
+#submit-word {
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 分享与在线人数区域 */
+#share-section {
+  margin: 20px auto;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* “再玩一局”区域 */
+.center {
+  text-align: center;
+  margin: 20px auto;
+}
