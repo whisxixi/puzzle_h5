@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sessionId = urlParams.get('session');
 
     if (!sessionId) {
+      console.log('🔥🔥🔥 sessionId 是:', sessionId); 
       createNewSession().then(newSession => {
         sessionId = newSession.sessionId;
         window.history.replaceState({}, '', `?session=${sessionId}`);
