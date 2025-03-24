@@ -130,4 +130,11 @@ function getConcurrentPlayers() {
 }
 
 // module.exports = app;
-//module.exports = (req, res) => app(req, res);
+module.exports = (req, res) => {
+  try {
+    app(req, res);
+  } catch (err) {
+    console.error('❌ Express 调用失败:', err);
+    res.status(500).json({ error: 'Internal Server Error', detail: err.message });
+  }
+};
