@@ -7,6 +7,7 @@ const fs = require('fs');
 //const prebuiltImages = require('../imageList.js');
 let prebuiltImages = [];
 try {
+  console.error('prebuiltImages');
   prebuiltImages = require('../imageList.js');
 } catch (e) {
   console.error('❌ 无法加载 imageList.js', e);
@@ -148,12 +149,12 @@ function getConcurrentPlayers() {
 }
 
 // module.exports = app;
-module.exports = (req, res) => {
-  console.log('module.exports');
-  try {
-    app(req, res);
-  } catch (err) {
-    console.error('❌ Express 调用失败:', err);
-    res.status(500).json({ error: 'Internal Server Error', detail: err.message });
-  }
-};
+// module.exports = (req, res) => {
+//   console.log('module.exports');
+//   try {
+//     app(req, res);
+//   } catch (err) {
+//     console.error('❌ Express 调用失败:', err);
+//     res.status(500).json({ error: 'Internal Server Error', detail: err.message });
+//   }
+// };
