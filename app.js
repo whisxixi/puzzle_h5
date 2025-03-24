@@ -81,6 +81,7 @@ function createNewSession() {
     .then(res => res.json());
 }
 function fetchSession(sessionId) {
+  console.log('🔥 正在请求 API session:', sessionId); // 添加这行
   return fetch(`/api/session?id=${sessionId}`)
     .then(res => res.json());
 }
@@ -189,6 +190,7 @@ function unlockPiece(sessionId) {
       }
     })
     .catch(err => console.error('解锁拼图失败：', err));
+    console.log('🧩 puzzleProgress:', data.puzzleProgress);
 }
 
 // --- 小局部分（客户端独立） ---
