@@ -104,3 +104,28 @@ app.put('/', (req, res) => {
   res.status(400).json({ error: 'Unknown action' });
 });
 
+// 获取图片路径
+function getRandomImage() {
+  const imagesDir = path.join(__dirname, '../images');
+  let files = [];
+
+  try {
+    if (fs.existsSync(imagesDir)) {
+      files = fs.readdirSync(imagesDir).filter(f => /\.(jpg|png|jpeg)$/i.test(f));
+    } else {
+      files = prebuiltImages;
+    }
+  } catch (e) {
+    console.error('读取图片失败', e);
+    files = prebuiltImages;
+  }
+
+  if (files.length === 0) return 'https://via.placeholder.com/300';
+  const i = Math.floor(Math.random() * files.length);
+  return `/images/${files[i]}`;
+}
+
+function getConcurrentPlayers() {
+  return Math.floor(Math.random() * 100 + 1);
+}
+
