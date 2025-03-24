@@ -26,15 +26,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let sessionId;
     const urlParams = new URLSearchParams(window.location.search);
     sessionId = urlParams.get('session');
+    console.log('🔥🔥🔥 11sessionId 是:', sessionId); 
 
     if (!sessionId) {
-      console.log('🔥🔥🔥 sessionId 是:', sessionId); 
+      console.log('🔥🔥🔥 22sessionId 是:', sessionId); 
       createNewSession().then(newSession => {
         sessionId = newSession.sessionId;
         window.history.replaceState({}, '', `?session=${sessionId}`);
+        console.log('🔥🔥🔥 after222sessionId 是:', sessionId); 
         initGame(newSession);
       });
     } else {
+      console.log('🔥🔥🔥 33sessionId 是:', sessionId); 
       fetchSession(sessionId).then(sessionData => {
         initGame(sessionData);
       });
