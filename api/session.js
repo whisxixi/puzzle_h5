@@ -57,6 +57,7 @@ app.post('/', (req, res) => {
 
 // GET /api/session?id=... - 获取 session
 app.get('/', (req, res) => {
+  console.log('app.get');
   const sessionId = req.query.id;
   console.log('📦 请求 sessionId:', sessionId);
   console.log('📦 当前所有 sessions:', Object.keys(sessions));
@@ -76,6 +77,7 @@ app.get('/', (req, res) => {
 
 // PUT /api/session?id=... - 更新 session
 app.put('/', (req, res) => {
+  console.log('app.put');
   const sessionId = req.query.id;
   const session = sessions[sessionId];
   if (!session) return res.status(404).json({ error: 'Session not found' });
@@ -112,6 +114,7 @@ app.put('/', (req, res) => {
 
 // 获取图片路径
 function getRandomImage() {
+  console.log('getRandomImage');
   const imagesDir = path.join(__dirname, '../images');
   let files = [];
 
@@ -132,11 +135,13 @@ function getRandomImage() {
 }
 
 function getConcurrentPlayers() {
+  console.log('getConcurrentPlayers');
   return Math.floor(Math.random() * 100 + 1);
 }
 
 // module.exports = app;
 module.exports = (req, res) => {
+  console.log('module.exports');
   try {
     app(req, res);
   } catch (err) {
