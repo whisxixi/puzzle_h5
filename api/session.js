@@ -108,4 +108,5 @@ function getConcurrentPlayers() {
   return Math.floor(Math.random() * 100 + 1);
 }
 
-module.exports = app;
+// module.exports = app;
+module.exports = (req, res) => app(req, res);
