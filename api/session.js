@@ -60,9 +60,15 @@ app.get('/', (req, res) => {
   const sessionId = req.query.id;
   console.log('📦 请求 sessionId:', sessionId);
   console.log('📦 当前所有 sessions:', Object.keys(sessions));
-
+  if (!sessionId) {
+    console.warn('⚠️ 没有提供 sessionId');
+    return res.status(400).json({ error: 'Missing sessionId' });
+  }
   const session = sessions[sessionId];
-  if (!session) return res.status(404).json({ error: 'Session not found' });
+  if (!session) {
+    console.warn('⚠️ 找不到对应的 session');
+    return res.status(404).json({ error: 'Session not found' });
+  }
 
   session.concurrentPlayers = getConcurrentPlayers();
   res.json(session);
