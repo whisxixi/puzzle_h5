@@ -4,7 +4,13 @@ const uuid = require('uuid');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
-const prebuiltImages = require('../imageList.js');
+//const prebuiltImages = require('../imageList.js');
+let prebuiltImages = [];
+try {
+  prebuiltImages = require('../imageList.js');
+} catch (e) {
+  console.error('❌ 无法加载 imageList.js', e);
+}
 
 // ✅ 本地 dev 时保留状态
 if (!global._sessions) {
@@ -142,12 +148,12 @@ function getConcurrentPlayers() {
 }
 
 // module.exports = app;
-// module.exports = (req, res) => {
-//   console.log('module.exports');
-//   try {
-//     app(req, res);
-//   } catch (err) {
-//     console.error('❌ Express 调用失败:', err);
-//     res.status(500).json({ error: 'Internal Server Error', detail: err.message });
-//   }
+module.exports = (req, res) => {
+  console.log('module.exports');
+  try {
+    app(req, res);
+  } catch (err) {
+    console.error('❌ Express 调用失败:', err);
+    res.status(500).json({ error: 'Internal Server Error', detail: err.message });
+  }
 };
