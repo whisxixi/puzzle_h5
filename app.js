@@ -78,7 +78,16 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- 大局部分（服务器管理） ---
 function createNewSession() {
   return fetch('/api/session', { method: 'POST' })
-    .then(res => res.json());
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`创建会话失败: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    })
+    .catch(err => {
+      console.error('[createNewSession] 出错:', err);
+      throw err;
+    });
 }
 function fetchSession(sessionId) {
   console.log('🔥 正在请求 API session:', sessionId); // 添加这行
