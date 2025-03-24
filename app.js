@@ -30,12 +30,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!sessionId) {
       console.log('🔥🔥🔥 22sessionId 是:', sessionId); 
-      createNewSession().then(newSession => {
-        sessionId = newSession.sessionId;
-        window.history.replaceState({}, '', `?session=${sessionId}`);
-        console.log('🔥🔥🔥 after222sessionId 是:', sessionId); 
-        initGame(newSession);
-      });
+      createNewSession()
+        .then(newSession => {
+          sessionId = newSession.sessionId;
+          window.history.replaceState({}, '', `?session=${sessionId}`);
+          console.log('🔥🔥🔥 after222sessionId 是:', sessionId); 
+          initGame(newSession);
+        })
+        .catch(err => {
+          console.error('🔥🔥🔥 创建 session 出错:', err);
+        });
     } else {
       console.log('🔥🔥🔥 33sessionId 是:', sessionId); 
       fetchSession(sessionId).then(sessionData => {
@@ -90,7 +94,7 @@ function createNewSession() {
     })
     .catch(err => {
       console.error('[createNewSession] 出错:', err);
-      throw err;
+      throw err; // 继续向外抛，方便外层捕获
     });
 }
 function fetchSession(sessionId) {
