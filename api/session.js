@@ -4,7 +4,7 @@ const uuid = require('uuid');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
-//const prebuiltImages = require('../imageList.js');
+const prebuiltImages = require('../imageList.js');
 
 // ✅ 本地 dev 时保留状态
 if (!global._sessions) {
@@ -84,25 +84,25 @@ app.put('/', (req, res) => {
 });
 
 // 获取图片路径
-function getRandomImage() {
-  const imagesDir = path.join(__dirname, '../images');
-  let files = [];
+// function getRandomImage() {
+//   const imagesDir = path.join(__dirname, '../images');
+//   let files = [];
 
-  try {
-    if (fs.existsSync(imagesDir)) {
-      files = fs.readdirSync(imagesDir).filter(f => /\.(jpg|png|jpeg)$/i.test(f));
-    } else {
-      files = prebuiltImages;
-    }
-  } catch (e) {
-    console.error('读取图片失败', e);
-    files = prebuiltImages;
-  }
+//   try {
+//     if (fs.existsSync(imagesDir)) {
+//       files = fs.readdirSync(imagesDir).filter(f => /\.(jpg|png|jpeg)$/i.test(f));
+//     } else {
+//       files = prebuiltImages;
+//     }
+//   } catch (e) {
+//     console.error('读取图片失败', e);
+//     files = prebuiltImages;
+//   }
 
-  if (files.length === 0) return 'https://via.placeholder.com/300';
-  const i = Math.floor(Math.random() * files.length);
-  return `/images/${files[i]}`;
-}
+//   if (files.length === 0) return 'https://via.placeholder.com/300';
+//   const i = Math.floor(Math.random() * files.length);
+//   return `/images/${files[i]}`;
+// }
 
 function getConcurrentPlayers() {
   return Math.floor(Math.random() * 100 + 1);
