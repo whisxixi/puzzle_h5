@@ -68,3 +68,39 @@ app.get('/', (req, res) => {
   res.json(session);
 });
 
+// PUT /api/session?id=... - 更新 session
+app.put('/', (req, res) => {
+  const sessionId = req.query.id;
+  const session = sessions[sessionId];
+  if (!session) return res.status(404).json({ error: 'Session not found' });
+
+  const { action } = req.body;
+
+  if (action === 'unlockPiece') {
+    const locked = session.puzzleProgress
+      .map((v, i) => (v ? null : i))
+      .filter(i => i !== null);
+
+    if (locked.length > 0) {
+      const randIndex = locked[Math.floor(Math.random() * locked.length)];
+      session.puzzleProgress[randIndex] = true;
+    }
+
+    return res.json(session);
+
+  } else if (action === 'nextImage') {
+    if (!session.puzzleProgress.every(Boolean)) {
+      return res.json({ message: '拼图未完成', ...session });
+    }
+
+    session.imageUrl = getRandomImage();
+    session.puzzleProgress = Array(session.gridRows * session.gridCols).fill(false);
+    return res.json(session);
+
+  } else if (action === 'resetRound') {
+    return res.json(session);
+  }
+
+  res.status(400).json({ error: 'Unknown action' });
+});
+
