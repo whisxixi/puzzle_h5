@@ -11,7 +11,7 @@ let resetActive = false;
 
 // 从 public/words.txt 加载单词库
 function loadLocalDictionary() {
-  return fetch('public/words.txt')
+  return fetch('./public/words.txt')
     .then(res => res.text())
     .then(text => {
       localDictionary = text.split(/\r?\n/)
@@ -347,7 +347,7 @@ function shareSession(sessionId) {
 // --- 加载单词库 ---
 // 从 public/words.txt 加载单词库，生成 localDictionary 数组
 function loadLocalDictionary() {
-  return fetch('public/words.txt')
+  return fetch('./public/words.txt')
     .then(res => res.text())
     .then(text => {
       localDictionary = text.split(/\r?\n/)
