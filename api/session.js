@@ -142,12 +142,12 @@ function getConcurrentPlayers() {
 }
 
 // module.exports = app;
-module.exports = (req, res) => {
-  console.log('module.exports');
-  try {
-    app(req, res);
-  } catch (err) {
-    console.error('❌ Express 调用失败:', err);
-    res.status(500).json({ error: 'Internal Server Error', detail: err.message });
-  }
+// module.exports = (req, res) => {
+//   console.log('module.exports');
+//   try {
+//     app(req, res);
+//   } catch (err) {
+//     console.error('❌ Express 调用失败:', err);
+//     res.status(500).json({ error: 'Internal Server Error', detail: err.message });
+//   }
 };
