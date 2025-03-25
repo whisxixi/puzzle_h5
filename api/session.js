@@ -1,14 +1,16 @@
-console.log('===> session.js: before require express');
+console.log('===> session.js: top-level code running');
 
 const express = require('express');
-console.log('===> session.js: after require express');
-
 const app = express();
-console.log('===> session.js: after app created');
+
+app.use((req, res, next) => {
+  console.log(`Inside express. req.url = ${req.url}, method=${req.method}`);
+  next();
+});
 
 app.get('/', (req, res) => {
-  console.log('===> session.js: handling GET /');
-  return res.json({ foo: 'bar' });
+  console.log('===> session.js: matched GET /');
+  res.json({ foo: 'bar' });
 });
 
 module.exports = (req, res) => {
