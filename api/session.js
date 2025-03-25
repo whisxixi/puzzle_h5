@@ -1,16 +1,13 @@
 // file: api/session.js
-
-// 1) 引入 Express Router
 const express = require('express');
-const router = express.Router();
+const app = express();
 
-// 2) 定义在本地和 Vercel 都想访问的路由: /api/session
-router.get('/api/session', (req, res) => {
-  res.json({ msg: 'Hello from unified code' });
+// 在此定义所有路由，线上线下都共用
+app.get('/api/session', (req, res) => {
+  res.json({ msg: 'Hello from /api/session' });
 });
 
-// 3) Serverless 模式下导出为一个函数
-//    当 Vercel 调用 "/api/session" 时，这个函数会被执行
+// 导出给 Vercel 使用
 module.exports = (req, res) => {
-  return router(req, res);
+  return app(req, res);
 };

@@ -23,22 +23,20 @@
 
 
 // file: server/index.js
+// file: server/index.js
 const express = require('express');
-const path = require('path');
-
-// 引入 "api/session.js" 导出的那个无服务器函数
-const sessionFunction = require('../api/session.js');
+const sessionFunction = require('../api/session.js'); // 就是上面那个 module.exports
 
 const app = express();
 
-// 在本地，我们把所有请求交给 sessionFunction
-// 这样当你访问 /api/session 时，会进入 sessionFunction → 匹配 '/api/session'
+// 本地环境: 将任何请求转发给 sessionFunction
+// 这样 http://localhost:3000/api/session 时，会调用 session.js 内部逻辑
 app.use((req, res) => {
   sessionFunction(req, res);
 });
 
-// 启动本地服务
-const PORT = process.env.PORT || 3000;
+// 启动本地服务器
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Local dev server listening on http://localhost:${PORT}`);
   console.log(`Try GET http://localhost:${PORT}/api/session`);
