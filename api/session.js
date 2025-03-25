@@ -124,6 +124,7 @@ app.put('/', (req, res) => {
 // 获取图片路径
 function getRandomImage() {
   console.log('getRandomImage');
+  return '/images/mock.jpg';
   // const imagesDir = path.join(__dirname, '../images');
   // let files = [];
 
