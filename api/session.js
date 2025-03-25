@@ -10,7 +10,6 @@ app.use((req, res, next) => {
 
 app.get('/api/session', (req, res) => {
   console.log('===> session.js: matched GET /api/session');
-  ...
 });
 
 module.exports = (req, res) => {
