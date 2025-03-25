@@ -8,9 +8,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/', (req, res) => {
-  console.log('===> session.js: matched GET /');
-  res.json({ foo: 'bar' });
+app.get('/api/session', (req, res) => {
+  console.log('===> session.js: matched GET /api/session');
+  ...
 });
 
 module.exports = (req, res) => {
