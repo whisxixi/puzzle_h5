@@ -10,6 +10,8 @@ app.use((req, res, next) => {
 
 app.get('/api/session', (req, res) => {
   console.log('===> session.js: matched GET /api/session');
+  // 这里要结束请求，不然会超时
+  res.json({ msg: 'Hello from /api/session' });
 });
 
 module.exports = (req, res) => {
