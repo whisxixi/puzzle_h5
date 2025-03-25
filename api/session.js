@@ -1,26 +1,16 @@
 // file: api/session.js
-console.log('=== session.js top-level code ===');
 
+// 1) 引入 Express Router
 const express = require('express');
-const app = express();
+const router = express.Router();
 
-// 统一使用 '/api/session' 作为路由
-app.get('/api/session', (req, res) => {
-  console.log('=== session.js: matched GET /api/session');
-  res.json({ msg: 'Hello from /api/session - works both locally and on Vercel!' });
+// 2) 定义在本地和 Vercel 都想访问的路由: /api/session
+router.get('/api/session', (req, res) => {
+  res.json({ msg: 'Hello from unified code' });
 });
 
-// 判断当前脚本是否是用 "node api/session.js" 启动（本地开发）
-if (require.main === module) {
-  // 本地模式：监听 3000 端口
-  const PORT = 3000;
-  app.listen(PORT, () => {
-    console.log(`Local dev server listening at http://localhost:${PORT}`);
-    console.log('Try GET http://localhost:3000/api/session');
-  });
-} else {
-  // Vercel serverless 模式：导出给 Vercel 处理
-  module.exports = (req, res) => {
-    return app(req, res);
-  };
-}
+// 3) Serverless 模式下导出为一个函数
+//    当 Vercel 调用 "/api/session" 时，这个函数会被执行
+module.exports = (req, res) => {
+  return router(req, res);
+};
