@@ -2,18 +2,23 @@ const express = require('express');
 const app = express();
 const { v4: uuidv4 } = require('uuid');
 const bodyParser = require('body-parser');
+const path = require('path');
+const fs = require('fs');
 
-// 全局状态（仅本地有效）
-if (!global._sessions) {
-  global._sessions = {};
+let prebuiltImages = [];
+try {
+  prebuiltImages = require('../imageList.js');
+} catch (e) {
+  console.error('❌ 无法加载 imageList.js:', e);
 }
+
+if (!global._sessions) global._sessions = {};
 const sessions = global._sessions;
 
 app.use(bodyParser.json());
 
 // 创建 session
 app.post('/', (req, res) => {
-  console.log('📦 收到 POST 请求：创建新 session');
   const sessionId = uuidv4();
   const gridRows = 3;
   const gridCols = 3;
@@ -34,16 +39,9 @@ app.post('/', (req, res) => {
 // 获取 session
 app.get('/', (req, res) => {
   const sessionId = req.query.id;
-  console.log('📦 收到 GET 请求，sessionId:', sessionId);
-
-  if (!sessionId) {
-    return res.status(400).json({ error: 'Missing sessionId' });
-  }
-
   const session = sessions[sessionId];
-  if (!session) {
-    return res.status(404).json({ error: 'Session not found' });
-  }
+
+  if (!session) return res.status(404).json({ error: 'Session not found' });
 
   session.concurrentPlayers = getConcurrentPlayers();
   res.json(session);
@@ -53,10 +51,7 @@ app.get('/', (req, res) => {
 app.put('/', (req, res) => {
   const sessionId = req.query.id;
   const session = sessions[sessionId];
-
-  if (!session) {
-    return res.status(404).json({ error: 'Session not found' });
-  }
+  if (!session) return res.status(404).json({ error: 'Session not found' });
 
   const { action } = req.body;
 
@@ -89,17 +84,25 @@ app.put('/', (req, res) => {
   res.status(400).json({ error: 'Unknown action' });
 });
 
-// 随机图片（暂时写死，后面你可以替换回 imageList 逻辑）
+// 图片路径
 function getRandomImage() {
-  return '/images/whismiss_a_fantasy_craftsman_creating_a_magical_artifact.png';
+  if (prebuiltImages.length === 0) return 'https://via.placeholder.com/300';
+  const i = Math.floor(Math.random() * prebuiltImages.length);
+  return `/images/${prebuiltImages[i]}`;
 }
 
 function getConcurrentPlayers() {
   return Math.floor(Math.random() * 100 + 1);
 }
 
-// ✅ 核心！导出 serverless 函数
-module.exports = (req, res) => {
-  console.log('🔥 Serverless 函数被触发');
-  return app(req, res);
-};
+// ✅ 双环境兼容导出方式
+if (require.main === module) {
+  // 👉 本地运行（例如 node server/index.js 引用）
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`✅ 本地 API Server 运行中: http://localhost:${PORT}`);
+  });
+} else {
+  // 👉 Vercel serverless 模式
+  module.exports = (req, res) => app(req, res);
+}
