@@ -1,8 +1,3 @@
-const express = require('express');
-const app = express();
-
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello from minimal session.js' });
-});
-
-module.exports = (req, res) => app(req, res);
+module.exports = (req, res) => {
+  res.status(200).json({ msg: "Serverless function works!" });
+};
