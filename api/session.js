@@ -1,20 +1,26 @@
-console.log('===> session.js: top-level code running');
+// file: api/session.js
+console.log('=== session.js top-level code ===');
 
 const express = require('express');
 const app = express();
 
-app.use((req, res, next) => {
-  console.log(`Inside express. req.url = ${req.url}, method=${req.method}`);
-  next();
-});
-
+// 统一使用 '/api/session' 作为路由
 app.get('/api/session', (req, res) => {
-  console.log('===> session.js: matched GET /api/session');
-  // 这里要结束请求，不然会超时
-  res.json({ msg: 'Hello from /api/session' });
+  console.log('=== session.js: matched GET /api/session');
+  res.json({ msg: 'Hello from /api/session - works both locally and on Vercel!' });
 });
 
-module.exports = (req, res) => {
-  console.log('===> session.js: exports function called');
-  return app(req, res);
-};
+// 判断当前脚本是否是用 "node api/session.js" 启动（本地开发）
+if (require.main === module) {
+  // 本地模式：监听 3000 端口
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`Local dev server listening at http://localhost:${PORT}`);
+    console.log('Try GET http://localhost:3000/api/session');
+  });
+} else {
+  // Vercel serverless 模式：导出给 Vercel 处理
+  module.exports = (req, res) => {
+    return app(req, res);
+  };
+}
